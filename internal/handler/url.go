@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	"github.com/Anku55/url-shortener/internal/service"
 )
@@ -53,4 +54,21 @@ func (h *URLHandler) Shorten(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 
 	json.NewEncoder(w).Encode(response)
+}
+
+func (h *URLHandler) Redirect(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	shortCode := strings.TrimPrefix(r.URL.Path, "/")
+
+	originalURL, found := h.service.GetOriginalURL(shortCode)
+	if !found {
+		http.Error(w, "short URL not found", http.StatusNotFound)
+		return
+	}
+
+	http.Redirect(w, r, originalURL, http.StatusFound)
 }

@@ -17,6 +17,7 @@ func main() {
 	urlHandler := handler.NewURLHandler(urlService)
 
 	http.HandleFunc("/shorten", urlHandler.Shorten)
+	http.HandleFunc("/", urlHandler.Redirect)
 
 	fmt.Println("Server running on http://localhost:8080")
 
