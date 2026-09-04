@@ -2,7 +2,9 @@ package service
 
 import (
 	"crypto/rand"
+	"fmt"
 	"math/big"
+	"net/url"
 )
 
 const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
@@ -23,6 +25,10 @@ func NewURLService(storage Storage) *URLService {
 }
 
 func (s *URLService) ShortenURL(originalURL string) (string, error) {
+	err:=validateURL(originalURL)
+	if err!=nil{
+		return "",err
+	}
 	shortCode, err := generateShortCode(6)
 	if err != nil {
 		return "", err
@@ -49,4 +55,24 @@ func generateShortCode(length int) (string, error) {
 	}
 
 	return string(result), nil
+}
+
+func validateURL(originalURL string) error {
+	parsedURL, err := url.Parse(originalURL)
+
+	if err != nil {
+		return err
+	}
+
+	if parsedURL.Scheme != "http" && parsedURL.Scheme != "https" {
+		return fmt.Errorf("invalid scheme: %s (only http and https are allowed)", parsedURL.Scheme)
+
+	}
+
+	if parsedURL.Host == "" {
+		return fmt.Errorf("url host cannot be empty")
+	}
+
+
+	return nil
 }

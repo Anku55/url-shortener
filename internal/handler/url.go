@@ -42,7 +42,7 @@ func (h *URLHandler) Shorten(w http.ResponseWriter, r *http.Request) {
 
 	shortCode, err := h.service.ShortenURL(req.URL)
 	if err != nil {
-		http.Error(w, "failed to shorten URL", http.StatusInternalServerError)
+		http.Error(w, "failed to shorten URL", http.StatusBadRequest)
 		return
 	}
 

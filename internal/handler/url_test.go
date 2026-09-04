@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/Anku55/url-shortener/internal/service"
@@ -77,6 +78,34 @@ func TestRedirectMethodNotAllowed(t *testing.T) {
 			"expected status %d, got %d",
 			http.StatusMethodNotAllowed,
 			recorder.Code,
+		)
+	}
+}
+
+func TestShortenInvalidURL(t *testing.T) {
+	store := storage.NewMemoryStorage()
+	service := service.NewURLService(store)
+	handler := NewURLHandler(service)
+
+	body := `{"url":"hello"}`
+
+	req := httptest.NewRequest(
+		http.MethodPost,
+		"/shorten",
+		strings.NewReader(body),
+	)
+
+	recorder := httptest.NewRecorder()
+
+	handler.Shorten(recorder, req)
+
+	response := recorder.Result()
+
+	if response.StatusCode != http.StatusBadRequest {
+		t.Fatalf(
+			"expected status %d, got %d",
+			http.StatusBadRequest,
+			response.StatusCode,
 		)
 	}
 }

@@ -69,3 +69,20 @@ func TestGetOriginalURLNotFound(t *testing.T) {
 		t.Fatalf("expected empty URL, got %s", returnedURL)
 	}
 }
+
+func TestShortenURLInvalidURL(t *testing.T) {
+	store := storage.NewMemoryStorage()
+	service := NewURLService(store)
+
+	invalidURL := "ftp://example.com "
+
+	shortCode, err := service.ShortenURL(invalidURL)
+
+	if err == nil {
+		t.Fatal("expected an error for invalid URL")
+	}
+
+	if shortCode != "" {
+		t.Fatalf("expected empty short code, got %s", shortCode)
+	}
+}
