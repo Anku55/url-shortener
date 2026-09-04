@@ -32,6 +32,9 @@ func (s *URLService) ShortenURL(originalURL string) (string, error) {
 
 	return shortCode, nil
 }
+func (s *URLService) GetOriginalURL(shortCode string) (string, bool) {
+	return s.storage.Get(shortCode)
+}
 
 func generateShortCode(length int) (string, error) {
 	result := make([]byte, length)
